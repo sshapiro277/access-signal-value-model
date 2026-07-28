@@ -43,14 +43,18 @@ function whole(n) { return Math.round(n).toLocaleString(); }
 
 function erodedTRx(atRisk, weeklyDecay, responseWeek, postDampen, horizon) {
   let remaining = atRisk;
-  let cumulativeLost = 0;
+  const weeklyRemaining = [];
   for (let week = 1; week <= horizon; week += 1) {
     const rate = week <= responseWeek ? weeklyDecay : weeklyDecay * (1 - postDampen);
     const weeklyLoss = remaining * rate;
-    cumulativeLost += weeklyLoss;
     remaining -= weeklyLoss;
+    weeklyRemaining.push(remaining);
   }
-  return { cumulativeLost, remaining };
+  return {
+    lostRunRate: atRisk - remaining,
+    remaining,
+    weeklyRemaining,
+  };
 }
 
 function calculate(responseWeek = state.aiWk) {
@@ -58,12 +62,17 @@ function calculate(responseWeek = state.aiWk) {
   const dampen = state.dampen / 100;
   const manual = erodedTRx(state.atRisk, decay, state.manualWk, dampen, state.horizon);
   const ai = erodedTRx(state.atRisk, decay, responseWeek, dampen, state.horizon);
-  const avoidedTRx = manual.cumulativeLost - ai.cumulativeLost;
+  const protectedByWeek = ai.weeklyRemaining.map(
+    (aiRemaining, index) => aiRemaining - manual.weeklyRemaining[index]
+  );
+  const protectedRunRate = protectedByWeek.at(-1) || 0;
+  const cumulativeProtectedTRx = protectedByWeek.reduce((total, value) => total + value, 0);
   return {
-    manualLost: manual.cumulativeLost,
-    aiLost: ai.cumulativeLost,
-    avoidedTRx,
-    avoidedRevenue: avoidedTRx * state.netRev,
+    manualLostRunRate: manual.lostRunRate,
+    aiLostRunRate: ai.lostRunRate,
+    protectedRunRate,
+    cumulativeProtectedTRx,
+    avoidedRevenue: cumulativeProtectedTRx * state.netRev,
   };
 }
 
@@ -131,7 +140,7 @@ function render() {
   warning.textContent = "The AI-enabled response is slower than today’s process in this scenario, so the model shows added—not avoided—erosion.";
 
   document.querySelector("#avoided-revenue").textContent = currency(result.avoidedRevenue);
-  document.querySelector("#protected-trx").textContent = `${isNegative ? "≈" : "≈"} ${whole(Math.abs(result.avoidedTRx))} TRx ${isNegative ? "additionally eroded" : "protected"} over ${state.horizon} weeks`;
+  document.querySelector("#protected-trx").textContent = `≈ ${whole(Math.abs(result.cumulativeProtectedTRx))} cumulative TRx ${isNegative ? "additionally eroded" : "protected"} over ${state.horizon} weeks`;
   document.querySelector("#annual-value").textContent = currency(result.avoidedRevenue * state.events);
   document.querySelector("#annual-note").textContent = `Across ${state.events} material events`;
 
@@ -142,17 +151,19 @@ function render() {
     ? `Illustrative commercial value is <strong>${Math.round(ratio)}×</strong> the labor savings. Efficiency alone understates the case.`
     : "This scenario does not create commercial value; revisit the response-time assumption.";
 
-  const maxLost = Math.max(result.manualLost, result.aiLost, 1);
+  const maxLost = Math.max(result.manualLostRunRate, result.aiLostRunRate, 1);
   document.querySelector("#erosion-bars").innerHTML = [
-    { label: `Current response · week ${state.manualWk}`, value: result.manualLost, color: "var(--manual)" },
-    { label: `AI-enabled response · week ${state.aiWk}`, value: result.aiLost, color: "var(--green)" },
+    { label: `Current response · week ${state.manualWk}`, value: result.manualLostRunRate, color: "var(--manual)" },
+    { label: `AI-enabled response · week ${state.aiWk}`, value: result.aiLostRunRate, color: "var(--green)" },
   ].map((row) => `
     <div class="bar-row">
-      <div class="bar-meta"><span>${row.label}</span><strong>${whole(row.value)} TRx</strong></div>
+      <div class="bar-meta"><span>${row.label}</span><strong>${whole(row.value)} TRx / week</strong></div>
       <div class="track"><div class="fill" style="width:${Math.max(0, row.value / maxLost * 100)}%;background:${row.color}"></div></div>
     </div>
   `).join("");
-  document.querySelector("#avoided-detail").textContent = `${whole(result.avoidedTRx)} TRx → ${currency(result.avoidedRevenue)}`;
+  document.querySelector("#run-rate-label").textContent = `Protected weekly run-rate at week ${state.horizon}`;
+  document.querySelector("#protected-run-rate").textContent = `${whole(result.protectedRunRate)} TRx / week`;
+  document.querySelector("#avoided-detail").textContent = `${whole(result.cumulativeProtectedTRx)} cumulative TRx → ${currency(result.avoidedRevenue)}`;
 
   const sensitivity = [1, 2, 3, 4, 5, 6].map((week) => ({ week, value: calculate(week).avoidedRevenue }));
   const maxSens = Math.max(...sensitivity.map((row) => Math.max(row.value, 0)), 1);
