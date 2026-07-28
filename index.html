@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Interactive model for estimating the value of faster access signal-to-action response." />
+    <meta property="og:title" content="Avoided Rx Erosion During Response Lag" />
+    <meta property="og:description" content="A client-calibrated model for the commercial value of faster access response." />
+    <meta property="og:image" content="./og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Avoided Rx Erosion During Response Lag" />
+    <meta name="twitter:description" content="A client-calibrated model for the commercial value of faster access response." />
+    <meta name="twitter:image" content="./og.png" />
+    <title>Access Signal-to-Action Value Model</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="masthead">
+        <div class="eyebrow">Signal-to-Action · Value Model</div>
+        <div class="title-row">
+          <div>
+            <h1>Avoided Rx erosion during response lag</h1>
+            <p>The value of a faster, coordinated response is the prescribing retained while the current process is still detecting, debating, sizing, and cascading.</p>
+          </div>
+          <button id="reset" class="secondary-button" type="button">Reset assumptions</button>
+        </div>
+      </header>
+
+      <section class="scenario-strip" aria-label="Scenario presets">
+        <div>
+          <span class="strip-label">Starting point</span>
+          <span class="strip-copy">Choose a scenario, then replace it with client evidence.</span>
+        </div>
+        <div class="preset-buttons">
+          <button type="button" data-preset="conservative">Conservative</button>
+          <button type="button" class="active" data-preset="base">Illustrative base</button>
+          <button type="button" data-preset="high">Higher exposure</button>
+        </div>
+      </section>
+
+      <section class="data-tools card" aria-label="Scenario and data controls">
+        <div class="tool-group tool-group--save">
+          <div>
+            <div class="section-label">Saved scenarios</div>
+            <div class="tool-note">Stored only in this browser on this computer.</div>
+          </div>
+          <div class="tool-row">
+            <input id="scenario-name" class="text-input" type="text" maxlength="60" placeholder="Scenario name" aria-label="New scenario name" />
+            <button id="save-scenario" class="primary-button" type="button">Save current</button>
+          </div>
+          <div class="tool-row">
+            <select id="scenario-select" class="select-input" aria-label="Saved scenarios">
+              <option value="">No saved scenarios</option>
+            </select>
+            <button id="load-scenario" class="secondary-button" type="button">Load</button>
+            <button id="delete-scenario" class="quiet-button" type="button">Delete</button>
+          </div>
+        </div>
+
+        <div class="tool-divider"></div>
+
+        <div class="tool-group">
+          <div>
+            <div class="section-label">Spreadsheet exchange</div>
+            <div class="tool-note">Export the current assumptions or import an updated CSV.</div>
+          </div>
+          <div class="tool-row">
+            <button id="export-csv" class="secondary-button" type="button">Export CSV</button>
+            <label class="secondary-button file-button" for="import-csv">Import CSV</label>
+            <input id="import-csv" type="file" accept=".csv,text/csv" hidden />
+          </div>
+          <div id="data-status" class="data-status" role="status"></div>
+        </div>
+      </section>
+
+      <div class="workspace">
+        <aside class="controls card">
+          <div class="section-label">Your assumptions</div>
+          <div id="sliders"></div>
+          <div id="input-warning" class="input-warning" role="status" hidden></div>
+        </aside>
+
+        <section class="results" aria-live="polite">
+          <div class="headline-grid">
+            <article class="metric-card metric-card--value">
+              <div class="metric-label">Avoided net revenue · per event</div>
+              <div id="avoided-revenue" class="metric-value">$0</div>
+              <div id="protected-trx" class="metric-note"></div>
+            </article>
+            <article class="metric-card">
+              <div class="metric-label">Annualized · one brand</div>
+              <div id="annual-value" class="metric-value">$0</div>
+              <div id="annual-note" class="metric-note"></div>
+            </article>
+          </div>
+
+          <article class="card compact-card">
+            <div>
+              <div class="metric-label">Estimated labor savings / event</div>
+              <div id="labor-value" class="labor-value">$12,800</div>
+            </div>
+            <div class="divider"></div>
+            <p id="ratio-copy"></p>
+          </article>
+
+          <article class="card chart-card">
+            <div class="section-label">Cumulative eroded TRx · where the value comes from</div>
+            <div id="erosion-bars"></div>
+            <div class="delta-row">
+              <span>Avoided erosion</span>
+              <strong id="avoided-detail"></strong>
+            </div>
+          </article>
+
+          <article class="card chart-card">
+            <div class="section-label">Sensitivity · show this, not only the point estimate</div>
+            <p class="chart-subtitle">Avoided revenue per event as the AI-enabled response week varies</p>
+            <div id="sensitivity"></div>
+          </article>
+        </section>
+      </div>
+
+      <section class="method-card">
+        <div class="method-heading">
+          <div>
+            <div class="section-label section-label--red">Before this leaves your laptop</div>
+            <h2>A framework the client fills in—not a value claim</h2>
+          </div>
+          <button id="method-toggle" class="text-button" type="button" aria-expanded="false">Show methodology</button>
+        </div>
+        <p>These outputs are directionally useful but empirically unvalidated. Decay rate and the manual-versus-AI response gap drive most of the result. Ground both in brand data or a defensible analog before client use.</p>
+        <div id="method-detail" class="method-detail" hidden>
+          <div>
+            <h3>What the model does</h3>
+            <p>Each week, a share of the remaining exposed TRx is treated as eroded. Once a response lands, that weekly decay rate is reduced by the selected dampening percentage. The difference between the two scenarios is valued using net revenue per TRx.</p>
+          </div>
+          <div>
+            <h3>What it does not prove</h3>
+            <p>It does not establish causality, account for payer reversals, segment-level switching behavior, delayed field execution, or differences in patient persistence. Those belong in a client-calibrated pilot.</p>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <span>Illustrative decision-support model</span>
+        <span>Human judgment remains the control point</span>
+      </footer>
+    </main>
+    <script defer src="./app.js"></script>
+  </body>
+</html>
