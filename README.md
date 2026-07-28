@@ -14,4 +14,4 @@ An interactive, client-calibrated model for exploring the commercial value of fa
 
 ## Important interpretation note
 
-This is a decision-support framework, not a validated ROI claim. Before external use, calibrate the erosion rate, response-time gap, response effectiveness, and other assumptions using brand data or a defensible analog.
+This is a decision-support framework, not a validated ROI claim. It estimates protected prescriptions by summing the weekly area between the current-response and AI-enabled run-rate curves. Before external use, calibrate the erosion rate, response-time gap, response effectiveness, and other assumptions using brand data or a defensible analog.

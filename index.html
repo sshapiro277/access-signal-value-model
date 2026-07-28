@@ -121,10 +121,14 @@
           </article>
 
           <article class="card chart-card">
-            <div class="section-label">Cumulative eroded TRx · where the value comes from</div>
+            <div class="section-label">Eroded weekly TRx run-rate at the horizon</div>
             <div id="erosion-bars"></div>
             <div class="delta-row">
-              <span>Avoided erosion</span>
+              <span id="run-rate-label">Protected weekly run-rate</span>
+              <strong id="protected-run-rate"></strong>
+            </div>
+            <div class="delta-row delta-row--value">
+              <span>Cumulative protected value</span>
               <strong id="avoided-detail"></strong>
             </div>
           </article>
@@ -149,7 +153,7 @@
         <div id="method-detail" class="method-detail" hidden>
           <div>
             <h3>What the model does</h3>
-            <p>Each week, a share of the remaining exposed TRx is treated as eroded. Once a response lands, that weekly decay rate is reduced by the selected dampening percentage. The difference between the two scenarios is valued using net revenue per TRx.</p>
+            <p>Each week, a share of the remaining exposed TRx run-rate is treated as eroded. Once a response lands, that weekly decay rate is reduced by the selected dampening percentage. The model sums the weekly difference between the two run-rate curves across the full horizon, then values those cumulative protected prescriptions using net revenue per TRx.</p>
           </div>
           <div>
             <h3>What it does not prove</h3>

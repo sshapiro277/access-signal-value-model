@@ -272,6 +272,12 @@ input[type="range"] {
   font-weight: 700;
 }
 .delta-row strong { color: var(--amber); font-variant-numeric: tabular-nums; }
+.delta-row--value {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top-style: dashed;
+}
+.delta-row--value strong { font-size: 14px; }
 .sens-row {
   display: grid;
   grid-template-columns: 42px 1fr 76px;
