@@ -1,5 +1,5 @@
 const inputs = [
-  { key: "atRisk", label: "At-risk TRx / week", min: 100, max: 3000, step: 50, suffix: "", hint: "Weekly volume exposed to the access signal" },
+  { key: "atRisk", label: "At-risk TRx / week", min: 100, max: 50000, step: 100, suffix: "", hint: "Weekly volume exposed to the access signal—not total brand volume" },
   { key: "decay", label: "Weekly decay rate", min: 0.5, max: 6, step: 0.5, suffix: "%", hint: "Largest value lever; use brand evidence or an analog" },
   { key: "manualWk", label: "Response time — today", min: 3, max: 10, step: 1, suffix: " wk", hint: "Detect → validate → size → decide → cascade" },
   { key: "aiWk", label: "Response time — AI-enabled", min: 1, max: 6, step: 1, suffix: " wk", hint: "AI accelerates handoffs; humans retain decisions" },
@@ -13,6 +13,7 @@ const presets = {
   conservative: { atRisk: 600, decay: 1.5, manualWk: 6, aiWk: 4, dampen: 50, netRev: 250, horizon: 20, events: 8 },
   base: { atRisk: 900, decay: 3, manualWk: 7, aiWk: 2, dampen: 70, netRev: 303, horizon: 26, events: 12 },
   high: { atRisk: 1600, decay: 4, manualWk: 8, aiWk: 3, dampen: 75, netRev: 450, horizon: 32, events: 16 },
+  jardiance2027: { atRisk: 5000, decay: 2, manualWk: 7, aiWk: 3, dampen: 55, netRev: 230, horizon: 26, events: 10 },
 };
 
 const STORAGE_KEY = "access-signal-value-model.scenarios.v1";
@@ -112,6 +113,7 @@ function setActivePreset(name) {
   document.querySelectorAll("[data-preset]").forEach((button) => {
     button.classList.toggle("active", button.dataset.preset === name);
   });
+  document.querySelector("#scenario-context").hidden = name !== "jardiance2027";
 }
 
 function render() {

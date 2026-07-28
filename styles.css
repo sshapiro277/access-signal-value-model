@@ -107,6 +107,23 @@ h1 {
 .preset-buttons { display: flex; gap: 7px; flex-wrap: wrap; }
 .preset-buttons button.active { background: var(--ink); color: white; border-color: var(--ink); }
 
+.scenario-context {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.85fr) minmax(0, 1.5fr);
+  gap: 24px;
+  margin: -8px 0 24px;
+  padding: 16px 18px;
+  border: 1px solid var(--amber-line);
+  border-left: 4px solid var(--amber);
+  border-radius: 8px;
+  background: var(--amber-soft);
+}
+.scenario-context[hidden] { display: none; }
+.scenario-context .section-label { color: var(--amber); margin-bottom: 4px; }
+.scenario-context strong { font-family: Georgia, Cambria, serif; font-size: 16px; line-height: 1.35; }
+.scenario-context p { margin: 0; color: var(--slate); font-size: 12px; line-height: 1.55; }
+.scenario-context a { color: #745018; font-weight: 700; }
+
 .data-tools {
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) 1px minmax(260px, 0.8fr);
@@ -311,6 +328,7 @@ footer {
   .controls { position: static; }
   .data-tools { grid-template-columns: 1fr; }
   .tool-divider { width: auto; height: 1px; }
+  .scenario-context { grid-template-columns: 1fr; gap: 10px; }
 }
 @media (max-width: 560px) {
   .headline-grid, .method-detail { grid-template-columns: 1fr; }
